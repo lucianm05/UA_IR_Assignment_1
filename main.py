@@ -6,9 +6,14 @@ from classes.document import Document
 from classes.indexer import Indexer
 
 documents_path = "assets/MEDLINE_2024_Baseline.jsonl"
-partial_indexes_path = "partial_indexes"
-final_index_path = "final_index.json"
+partial_indexes_path = "out/partial_indexes"
+final_index_path = "out/final_index.json"
 documents_per_index_limit = 10000
+
+
+def create_out_dir():
+    if not os.path.exists('out'):
+        os.makedirs('out')
 
 
 def save_partial_index(index):
@@ -16,7 +21,7 @@ def save_partial_index(index):
         os.makedirs(partial_indexes_path)
 
     timestamp = str(time.time()).replace(".", "")
-    index_path = partial_indexes_path + "./index-" + timestamp + ".json"
+    index_path = os.path.join(partial_indexes_path, 'index' + timestamp + '.json')
 
     file = open(index_path, "a")
     file.write(json.dumps(index))
@@ -31,23 +36,24 @@ def remove_partial_index_dir_content():
 
 def create_partial_indexes():
     print("Creating partial indexes...")
+    partial_index = {}
     with open(documents_path, "r") as file:
-        # i = 0
-        documents = []
+        i = 0
         line = file.readline()
         while line:
             # print(i)
-            line = file.readline()
             document = Document(line)
-            documents.append(document)
+            document_index = Indexer.index_document(document)
+            partial_index = Indexer.merge_indexes([partial_index, document_index])
 
-            if len(documents) >= documents_per_index_limit:
-                print("Indexing documents...")
-                index = Indexer.index_documents(documents)
-                documents = []
-                # print(index)
-                save_partial_index(index)
-            # i += 1
+            if i >= documents_per_index_limit:
+                print("Saving index...")
+                save_partial_index(partial_index)
+                partial_index = {}
+                i = 0
+
+            i += 1
+            line = file.readline()
     file.close()
 
 
@@ -89,6 +95,7 @@ def create_final_index():
 
 
 def main():
+    create_out_dir()
     remove_partial_index_dir_content()
     remove_final_index_file()
     create_partial_indexes()
