@@ -26,12 +26,12 @@ class Indexer:
 
     @staticmethod
     def merge_posting_lists(posting_lists: list[list[str]]):
-        merged = []
+        merged = set()
 
         for posting_list in posting_lists:
-            merged = merged + posting_list
+            merged.update(posting_list)
 
-        return list(set(merged))
+        return list(merged)
 
     @staticmethod
     def merge_indexes(indexes: list[dict[str, list[str]]]):
