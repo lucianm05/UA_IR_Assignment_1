@@ -19,9 +19,9 @@ def remove_final_index_file():
 
 def main():
     create_out_dir()
-    # remove_partial_index_dir_content()
+    remove_partial_index_dir_content()
     remove_final_index_file()
-    # CorpusReader.create_partial_indexes()
+    CorpusReader.create_partial_indexes()
     CorpusReader.create_final_index()
 
 
