@@ -1,6 +1,7 @@
+import itertools
+
 from classes.tokenizer import Tokenizer
 from classes.document import Document
-
 
 class Indexer:
     @staticmethod
@@ -53,12 +54,21 @@ class Indexer:
 
     @staticmethod
     def merge_posting_lists(posting_lists: list[list[str]]):
-        merged = set()
+        flattened_postings_list = list(itertools.chain.from_iterable(posting_lists))
+        postings_dict = {}
 
-        for posting_list in posting_lists:
-            merged.update(posting_list)
-
-        return list(merged)
+        for posting in flattened_postings_list:
+            # print('posting', posting)
+            doc_id, positions = posting.split(";")
+            if doc_id not in postings_dict:
+                postings_dict[doc_id] = positions
+            else:
+                postings_dict[doc_id] = postings_dict[doc_id] + "," + positions
+        
+        # Convert the dictionary back to the original format
+        merged_list = [f"{pmid};{values}" for pmid, values in postings_dict.items()]
+        
+        return merged_list
 
     @staticmethod
     def merge_indexes(indexes: list[dict[str, list[str]]]):

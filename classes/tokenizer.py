@@ -1,10 +1,7 @@
 import re
-
-non_tokenizable_terms = ["", "the", "and", "is", "or", "of", "in", "that", "by", "for", "to", "a", "as", "were"]
+from classes.constants import Constants
 
 class Tokenizer:
-    # def __init__(self):
-
     @staticmethod
     def tokenize_term(term: str):
         # 1. store all tokenized terms as lowercase
@@ -17,7 +14,7 @@ class Tokenizer:
         # 3. remove all numbers, we don't want to store them
         token = re.sub(r"\d", "", token)
 
-        if token in non_tokenizable_terms or token.isalpha() is False:
+        if token in Constants.non_tokenizable_terms or token.isalpha() is False:
             return None
 
         return token
