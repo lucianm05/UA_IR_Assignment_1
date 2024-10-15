@@ -1,22 +1,49 @@
 from classes.tokenizer import Tokenizer
 from classes.document import Document
 
-tokenizer = Tokenizer()
-
 
 class Indexer:
     @staticmethod
+    def __find_posting_by_doc_id(posting_list, doc_id):
+        for i, posting in enumerate(posting_list):
+            id = Indexer.__get_posting_id(posting)
+            if id == doc_id:
+                return i
+            return None
+        
+    @staticmethod
+    def __get_posting_id(posting):
+        parts = posting.split(';')
+        return parts[0]
+
+    @staticmethod
+    def __get_posting_positions(posting):
+        parts = posting.split(';')
+        return parts[1]
+    
+    @staticmethod
     def index_document(document: Document):
-        tokens = tokenizer.tokenize_terms(document.text)
+        tokens = Tokenizer.tokenize_terms(document.text)
         document_index = {}
 
-        for token in tokens:
+        for i, token in enumerate(tokens):
             # create the posting list if it does not exist
             if token not in document_index:
                 document_index[token] = []
                 # add the document id to the posting list
 
-            document_index[token].append(document.id)
+            # save a reference to the posting_list related to the current token
+            posting_list = document_index[token]
+            # try to find if there is already an entry with the same document id in the posting_list
+            existing_posting_position = Indexer.__find_posting_by_doc_id(posting_list, document.id)
+
+            # if there is already an entry, we need to append the position (i) to the posting
+            if existing_posting_position is not None:
+                existing_posting = posting_list[existing_posting_position]
+                posting_list[existing_posting_position] = existing_posting + "," + str(i) 
+            # if there isn't, we need to append the new posting, initializing the document id and the first position (i)
+            else:
+                posting_list.append(document.id + ";" + str(i))
 
         return document_index
 

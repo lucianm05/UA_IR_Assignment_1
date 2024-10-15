@@ -17,7 +17,7 @@ class Tokenizer:
         # 3. remove all numbers, we don't want to store them
         token = re.sub(r"\d", "", token)
 
-        if token in non_tokenizable_terms:
+        if token in non_tokenizable_terms or token.isalpha() is False:
             return None
 
         return token
