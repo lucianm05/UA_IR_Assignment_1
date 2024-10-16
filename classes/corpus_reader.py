@@ -21,25 +21,29 @@ class CorpusReader:
   @staticmethod
   def create_partial_indexes():
       print("Creating partial indexes...")
-      partial_index = {}
+    #   partial_index = {}
+      documents = []
       with open(Constants.documents_path, "r") as file:
-          i = 0
+        #   i = 0
           # j = 0
           line = file.readline()
           while line:
-              # print(j)
+              print(len(documents))
               document = Document(line)
-              document_index = Indexer.index_document(document)
-              partial_index = Indexer.merge_indexes([partial_index, document_index])
+              documents.append(document)
+            #   document_index = Indexer.index_document(document)
+            #   partial_index = Indexer.merge_indexes([partial_index, document_index])
 
-              if i >= Constants.documents_per_index_limit:
+              if len(documents) >= Constants.documents_per_index_limit:
                   print("Saving index...")
+                  partial_index = Indexer.index_documents(documents)
                   CorpusReader.save_partial_index(partial_index)
-                  partial_index = {}
-                  i = 0
+                  documents = []
+                #   partial_index = {}
+                #   i = 0
 
-              i += 1
-              # j += 1
+            #   i += 1
+            #   j += 1
               line = file.readline()
       file.close()
 

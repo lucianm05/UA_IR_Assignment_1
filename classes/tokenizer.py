@@ -1,5 +1,8 @@
 import re
 from classes.constants import Constants
+from nltk.stem import PorterStemmer
+
+stemmer = PorterStemmer()
 
 class Tokenizer:
     @staticmethod
@@ -14,10 +17,12 @@ class Tokenizer:
         # 3. remove all numbers, we don't want to store them
         token = re.sub(r"\d", "", token)
 
-        if token in Constants.non_tokenizable_terms or token.isalpha() is False:
+        if token in Constants.non_tokenizable_terms\
+            or token.isalpha() is False\
+            or len(token) <= 3:
             return None
 
-        return token
+        return stemmer.stem(token)
 
     @staticmethod
     def tokenize_terms(terms: str):

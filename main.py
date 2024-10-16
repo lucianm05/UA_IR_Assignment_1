@@ -1,7 +1,12 @@
+from setup import setup
+
+setup()
+
 import os
 
 from classes.corpus_reader import CorpusReader
 from classes.constants import Constants
+
 
 def create_out_dir():
     if not os.path.exists('out'):
